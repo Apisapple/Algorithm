@@ -35,7 +35,7 @@ vector<int> solution(int m, int n, vector<vector<int>> picture) {
                     }
                 }
             }
-            if(max_size_of_one_area < areaSize)
+            if(max_size_of_one_area < areaSize) 
                 max_size_of_one_area = areaSize;
             number_of_area++;
         }
