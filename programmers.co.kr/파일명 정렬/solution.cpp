@@ -55,7 +55,7 @@ vector<string> solution(vector<string> files) {
         }
     }
 
-    sort(fileinfo.begin(),fileinfo.end(), compare);
+    stable_sort(fileinfo.begin(),fileinfo.end(), compare);
 
     for(fileName information : fileinfo) {
         answer.push_back(files[information.index]);
