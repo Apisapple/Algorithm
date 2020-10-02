@@ -13,7 +13,6 @@ vector <vector<int> > visited;
 
 void DFS(int y, int x, vector< vector <int> > board) {
     visited[y][x] = 1;
-    land_count ++;
 
     for(int i = 0; i < 8; i++) {
         int next_height = y + dy[i];
@@ -33,7 +32,7 @@ int main() {
         if(width == 0 || height == 0)
             return 0;
         
-        vector <vector <int> > board(width, vector<int> (height, 0));
+        vector <vector <int> > board(height, vector<int> (width, 0));
         visited = board;
         // board 내용 입력
         for(int i = 0; i < height; i++) {
@@ -46,6 +45,7 @@ int main() {
             for(int j = 0; j < width; j ++) {
                 if(visited[i][j] == 0 && board[i][j] == 1) {
                     DFS(i, j, board);
+                    land_count ++;
                 }
             }
         }
