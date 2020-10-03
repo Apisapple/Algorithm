@@ -51,7 +51,7 @@ int main() {
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
             if(board[i][j] == 0) {
-                anwer = -1;
+                answer = -1;
                 cout << answer << endl;
                 return 0;
             } else {
