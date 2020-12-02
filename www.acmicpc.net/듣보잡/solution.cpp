@@ -24,7 +24,7 @@ int main() {
         }
     }
     sort(result_list.begin(), result_list.end());
-    printf("%d", (int)result_list.size());
+    printf("%d\n", (int)result_list.size());
     for(int i = 0; i < result_list.size(); i++) {
         printf("%s\n", result_list[i].c_str());
     }
