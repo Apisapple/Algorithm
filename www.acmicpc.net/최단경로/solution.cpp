@@ -1,60 +1,73 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 #include <queue>
-
+ 
+#define INF 987654321
+#define MAX_V 20001
+#define MAX_E 300001
+ 
 using namespace std;
-
-#define MAX_POINT 20000
-#define MAX_LINE 300000
-#define INF 99999999
-// 정점의 개수 V, 간선의 개수 E
-int V = 0, E = 0;
-vector <pair<int, int>> board[MAX_POINT];
-
-int main() {
-    // 내용 출력 확인을 위한 추가
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
-
-    cin >> V >> E;
-    int start = 0;
-    cin >> start;
-
-    //입력
-    for(int i = 0; i < E; i++) {
-        int start_node, end_node, value;
-        cin >> start_node >> end_node >> value;
-        board[start_node].push_back(make_pair(end_node, value));
-    }
-
-    // 간선의 값을 INF로 초기화
-    vector<int> Dist(V + 1, INF);
-
-    // 우선순위 큐를 통한 다이익스트라 알고리즘 시작
-    priority_queue<pair<int, int>> pq;
-    // 시작지점의 거리는 0
-    pq.push(make_pair(0, start));
-    Dist[start] = 0;
-
-    while(pq.empty()) {
-        int cost = pq.top().first;
-        int current_node = pq.top().second;
-        pq.pop();
-        for(int i = 0; i < board[current_node].size(); i++) {
-            int next_node = board[current_node][i].first;
-            int next_cost = board[current_node][i].second;
-            if(Dist[next_node] > next_cost - cost) {
-                Dist[next_node] = next_cost - cost;
-                pq.push(make_pair(Dist[next_node], next_node));
+int start_node_num, V, E;
+ 
+typedef struct NODE {
+    int end;
+    int val;
+};
+ 
+// 각 노드의 엣지를 저장하는 벡터 
+// 0번 인덱스는 버린다. 
+vector<NODE> EDGE_arr[MAX_E];
+// 출발 노드에서부터의 거리를 저장하는 배열
+int dist[MAX_V] = { 0 };
+ 
+void dijkstra() { 
+    priority_queue< pair<int,int> > pq;
+    pq.push({ 0, start_node_num });
+ 
+    // 노드의 거리 갱신은 V-1 번 만큼 하면 된다. 
+    while (!pq.empty()){
+        int now_node = pq.top().second;
+        int cost = -1 * pq.top().first;
+        pq.pop(); 
+ 
+        // 현재 노드에서 부터 주변에 있는 얘들의 값을 갱신한다. 
+        for (int k = 0; k < EDGE_arr[now_node].size(); k++) {
+            int new_val = dist[now_node] + EDGE_arr[now_node][k].val;
+            int before_val = dist[EDGE_arr[now_node][k].end];
+ 
+            // 현재 노드로 부터 연결된 엣지의 목적지까지 가는 거리와 기존의 거리를 비교하여, 
+            // 기존의 것이 더 크면 값을 갱신한다.  
+            if (new_val < before_val) {
+                dist[EDGE_arr[now_node][k].end] = new_val;
+                pq.push({ -1*new_val, EDGE_arr[now_node][k].end });
             }
         }
+ 
     }
-
-    for(int i = 1; i <= V; i++) {
-        if(Dist[i] == INF) cout << "INF" << endl;
-        else cout << Dist[i] << endl;
+}
+ 
+int main(){
+    cin >> V >> E >> start_node_num;
+    
+    int from, to, val;
+    // 간선 연결 
+    for (int i = 0; i < E; i++) {
+        scanf("%d %d %d", &from, &to, &val); 
+        EDGE_arr[from].push_back(NODE{ to, val });
     }
+ 
+    // 간선간의 거리 초기화 
+    for (int i = 1; i <= V; i++) {
+        dist[i] = INF;
+    }
+    dist[start_node_num] = 0;
+ 
+    dijkstra();
+  
+    for (int i = 1; i <= V; i++) {
+        if (dist[i] != INF) printf("%d\n", dist[i] );
+        else printf("INF\n");
+    }
+ 
     return 0;
 }
