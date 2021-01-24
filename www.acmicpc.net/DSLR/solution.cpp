@@ -1,50 +1,97 @@
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <queue>
-
+#include<iostream>
+#include<cstring>
+#include<string>
+#include<queue>
+ 
+#define endl "\n"
+#define MAX 10000
 using namespace std;
-
-// D: D 는 n을 두 배로 바꾼다. 결과 값이 9999 보다 큰 경우에는 10000 으로 나눈 나머지를 취한다. 그 결과 값(2n mod 10000)을 레지스터에 저장한다.
-// S: S 는 n에서 1 을 뺀 결과 n-1을 레지스터에 저장한다. n이 0 이라면 9999 가 대신 레지스터에 저장된다.
-// L: L 은 n의 각 자릿수를 왼편으로 회전시켜 그 결과를 레지스터에 저장한다. 이 연산이 끝나면 레지스터에 저장된 네 자릿수는 왼편부터 d2, d3, d4, d1이 된다.
-// R: R 은 n의 각 자릿수를 오른편으로 회전시켜 그 결과를 레지스터에 저장한다. 이 연산이 끝나면 레지스터에 저장된 네 자릿수는 왼편부터 d4, d1, d2, d3이 된다.
-
-string searchCommand(int start, int target, string command) {
-    queue<pair<int, string>> que;
-    que.push(make_pair(start, command));
-    while(!que.empty()) {
-        int number = que.front().first;
-        string temp_string = que.front().second;
-        que.pop();
-        if(number == target) {
-            cout << temp_string << endl;
-            return;
+ 
+int Start, End;
+bool Visit[MAX];
+ 
+void Initialize()
+{
+    memset(Visit, false, sizeof(Visit));
+}
+ 
+void Input()
+{
+    cin >> Start >> End;
+}
+ 
+string BFS(int a)
+{
+    queue<pair<int, string>> Q;
+    Q.push(make_pair(a, ""));
+    Visit[a] = true;
+ 
+    while (Q.empty() == 0)
+    {
+        int x = Q.front().first;
+        string s = Q.front().second;
+        Q.pop();
+ 
+        if (x == End) return s;
+        
+        int nx = x * 2;
+        if (nx > 9999) nx = nx % 10000;
+        if (Visit[nx] == false)
+        {
+            Visit[nx] = true;
+            Q.push(make_pair(nx, s + "D"));
         }
-        int temp_D = number * 2;
-        int temp_S = number - 1;
-        if(temp_D >= 10000) {
-            que.push(make_pair(temp_D % 10000, command + "D"));
-        } else {
-            que.push(make_pair(temp_D, command + "D"));
+ 
+        nx = x - 1;
+        if (nx < 0) nx = 9999;
+        if (Visit[nx] == false)
+        {
+            Visit[nx] = true;
+            Q.push(make_pair(nx, s + "S"));
         }
-
-        if(temp_S == 0) {
-            que.push(make_pair(9999, command + "S"));
-        } else {
-            que.push(make_pair(temp_S, command + "S"));
+ 
+        nx = (x % 1000) * 10 + (x / 1000);
+        if (Visit[nx] == false)
+        {
+            Visit[nx] = true;
+            Q.push(make_pair(nx, s + "L"));
+        }
+ 
+        nx = (x % 10) * 1000 + (x / 10);
+        if (Visit[nx] == false)
+        {
+            Visit[nx] = true;
+            Q.push(make_pair(nx, s + "R"));
         }
     }
 }
-
-int main() {
-    int testCase;
-    cin >> testCase;
-    while (testCase --) {
-        int start, target;
-        string command = "";
-        cin >> start >> target;
-        searchCommand(start, target, command);
+ 
+ 
+void Solution()
+{
+    string R = BFS(Start);
+    cout << R << endl;
+}
+ 
+void Solve()
+{
+    int Tc;
+    cin >> Tc;
+    for (int T = 1; T <= Tc; T++)
+    {
+        Initialize();
+        Input();
+        Solution();
     }
+}
+ 
+int main(void)
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+ 
+    Solve();
+ 
     return 0;
 }
