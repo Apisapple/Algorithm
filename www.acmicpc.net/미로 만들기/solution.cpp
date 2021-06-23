@@ -39,6 +39,7 @@ int getNextDirection(int currentDir, char command) {
         else if (currentDir == 3)
             return 1;
     }
+    return 0;
 }
 
 int main() {
@@ -84,7 +85,7 @@ int main() {
     }
     
     for(int i = start_x; i <= end_x; i++) {
-        for(int j = start_y; j <= end_y; j+=) {
+        for(int j = start_y; j <= end_y; j++) {
             if(board[i][j] == 1)
                 cout << ".";
             else
