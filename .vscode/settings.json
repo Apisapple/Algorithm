@@ -49,7 +49,17 @@
         "queue": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "cstring": "cpp",
+        "ios": "cpp",
+        "xfacet": "cpp",
+        "xlocinfo": "cpp",
+        "xlocnum": "cpp",
+        "xmemory": "cpp",
+        "xmemory0": "cpp",
+        "xstddef": "cpp",
+        "xtr1common": "cpp"
     },
     "python.pythonPath": "C:\\Users\\kmy20\\AppData\\Local\\Programs\\Python\\Python37-32\\python.exe",
     "cmake.configureOnOpen": false
