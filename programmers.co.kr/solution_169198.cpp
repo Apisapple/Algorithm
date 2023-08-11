@@ -8,34 +8,56 @@ using namespace std;
 
 #define MAX 1000
 
-int calculation_distance(int m, int n, pair<int, int> start_point, pair<int, int> ball_point) {
-  int min_distance = INT16_MAX;
-  if (start_point.first != ball_point.first || start_point.second <= ball_point.second)
-    min_distance = min(min_distance, (int)(pow(start_point.first - ball_point.first, 2) +
-                                           pow(start_point.second + ball_point.second, 2)));
+class BoundaryInformation {
+public:
+  int boundaryLeft;
+  int boundaryRight;
+  int boundaryDown;
+  int boundaryUp;
+  int x;
+  int y;
 
-  if (start_point.first >= ball_point.first || start_point.second != ball_point.second)
-    min_distance = min(min_distance, (int)(pow(start_point.first - 2 * m + ball_point.first, 2) +
-                                           pow(start_point.second - ball_point.second, 2)));
+  BoundaryInformation(int m, int n, pair<int, int> coordinates) {
+    this->boundaryLeft = coordinates.first;
+    this->boundaryRight = m - coordinates.first;
+    this->boundaryUp = n - coordinates.second;
+    this->boundaryDown = coordinates.second;
+    this->x = coordinates.first;
+    this->y = coordinates.second;
+  }
+};
 
-  if (start_point.first != ball_point.first || start_point.second >= ball_point.second)
-    min_distance = min(min_distance, (int)(pow(start_point.first - ball_point.first, 2) +
-                                           pow(start_point.second - 2 * n + ball_point.second, 2)));
+int calculation_distance(BoundaryInformation startPoint, BoundaryInformation destPoint) {
+  int distance = INT16_MAX;
+  int left = (int)pow((startPoint.boundaryLeft + destPoint.boundaryLeft), 2) + (int)pow(startPoint.y - destPoint.y, 2);
+  int right =
+      (int)pow((startPoint.boundaryRight + destPoint.boundaryRight), 2) + (int)pow(startPoint.y - destPoint.y, 2);
+  int down = (int)pow((startPoint.boundaryDown + destPoint.boundaryDown), 2) + (int)pow(startPoint.x - destPoint.x, 2);
+  int up = (int)pow((startPoint.boundaryUp + destPoint.boundaryUp), 2) + (int)pow(startPoint.x - destPoint.x, 2);
 
-  if (start_point.first <= ball_point.first || start_point.second != ball_point.second)
-    min_distance = min(min_distance, (int)(pow(start_point.first + ball_point.first, 2) +
-                                           pow(start_point.second - ball_point.second, 2)));
+  if (startPoint.x == destPoint.x) {
+    if (destPoint.y > startPoint.y)
+      distance = min(min(left, right), down);
+    else
+      distance = min(min(left, right), up);
+  } else if (startPoint.y == destPoint.y) {
+    if (destPoint.x > startPoint.x)
+      distance = min(min(up, down), left);
+    else
+      distance = min(min(up, down), right);
+  } else {
+    distance = min(min(left, right), min(up, down));
+  }
 
-  return min_distance;
+  return distance;
 }
 
-// 당구대의 가로 길이 m, 세로 길이 n
-// 공이 놓인 위치 startX, startY
-// 매 회마다 목표로 해야하는 공들의 위치 좌표 balls
 vector<int> solution(int m, int n, int startX, int startY, vector<vector<int>> balls) {
   vector<int> answer;
   for (vector<int> ball : balls) {
-    answer.push_back(calculation_distance(m, n, {startX, startY}, {ball[0], ball[1]}));
+    BoundaryInformation startPoint = BoundaryInformation(m, n, {startX, startY});
+    BoundaryInformation endPoint = BoundaryInformation(m, n, {ball[0], ball[1]});
+    answer.push_back(calculation_distance(startPoint, endPoint));
   }
 
   return answer;
