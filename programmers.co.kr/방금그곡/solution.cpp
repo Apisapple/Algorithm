@@ -1,90 +1,71 @@
-#include <string>
-#include <sstream>
-#include <vector>
+#include <algorithm>
 #include <iostream>
+#include <map>
+#include <string>
+#include <vector>
 using namespace std;
 
-struct music{
-    int time;
-    string title;
-    string sound;
-};
+void convert(string &sheet) {
+  map<char, char> m;
+  m.insert({'C', 'Q'});
+  m.insert({'D', 'R'});
+  m.insert({'F', 'S'});
+  m.insert({'G', 'T'});
+  m.insert({'A', 'U'});
 
-int calDuration(string startTime, string endTime) {
-    string startHour;
-    string startMinutes;
-    string endHour;
-    string endminutes;
-
-    stringstream startToken(startTime);
-    stringstream endToken(endTime);
-
-    getline(startToken, startHour, ':');
-    getline(startToken, startMinutes, ':');
-    getline(endToken, endHour, ':');
-    getline(endToken, endminutes, ':');
-
-    int duration = (stoi(endHour) - stoi(startHour)) * 60 + (stoi(endminutes) - stoi(startMinutes));
-    return duration;
-}
-void downSemiNote(string &sound, string origin, string translation) {
-    size_t index = 0;
-    while((index = sound.find(origin)) != string::npos) {
-        sound.replace(sound.begin() + index, sound.begin() + origin.length() + index, translation);
-        index += translation.length();
+  for (int i = 0; i < sheet.length(); i++) {
+    if (sheet[i] == '#') {
+      sheet[i - 1] = m[sheet[i - 1]];
+      sheet.erase(sheet.begin() + i);
+      i--;
     }
+  }
 }
 
 string solution(string m, vector<string> musicinfos) {
-    string answer = "";
-    vector <music> musics;
-    int playingTime = 0;
+  string answer = "(None)";
 
-    downSemiNote(m, "C#", "c");
-    downSemiNote(m, "D#", "d");
-    downSemiNote(m, "F#", "f");
-    downSemiNote(m, "G#", "g");
-    downSemiNote(m, "A#", "a");
-    
-    /* 입력 문자열을 token화 */
-    for(string music : musicinfos) {
-        stringstream token(music);
-        string startTime;
-        string endTime;
-        string title;
-        string sound;
-        getline(token, startTime, ',');
-        getline(token, endTime, ',');
-        getline(token, title, ',');
-        getline(token, sound, ',');
-        downSemiNote(sound, "C#", "c");
-        downSemiNote(sound, "D#", "d");
-        downSemiNote(sound, "F#", "f");
-        downSemiNote(sound, "G#", "g");
-        downSemiNote(sound, "A#", "a");
-        musics.push_back({calDuration(startTime, endTime), title, sound});
-        token.clear();
+  int answerPlayTime = -1;
+  for (int i = 0; i < musicinfos.size(); i++) {
+    string title;
+    string sheet;
+    int playTime = 0;
+
+    playTime += (musicinfos[i][6] - '0') * 600;
+    playTime += (musicinfos[i][7] - '0') * 60;
+    playTime += (musicinfos[i][9] - '0') * 10;
+    playTime += musicinfos[i][10] - '0';
+
+    playTime -= (musicinfos[i][0] - '0') * 600;
+    playTime -= (musicinfos[i][1] - '0') * 60;
+    playTime -= (musicinfos[i][3] - '0') * 10;
+    playTime -= musicinfos[i][4] - '0';
+
+    for (int j = 12; j < musicinfos[i].size(); j++) {
+      if (musicinfos[i][j] == ',') {
+        title = musicinfos[i].substr(12, j - 12);
+        sheet = musicinfos[i].substr(j + 1);
+        break;
+      }
     }
 
-    /* 
-    입력된 노래목록 중 노래 찾기 
-    제일 긴 노래 제목 반환
-    */
-    for(int i = 0 ; i < musics.size(); i++) {
-        int full = musics[i].time / musics[i].sound.length();
-        int remain = musics[i].time % musics[i].sound.length();
-        string temp = "";
-        for(int j = 0 ; j < full; j++) {
-            temp += musics[i].sound;
-        }
-        temp += musics[i].sound.substr(0, remain);
-        if(temp.find(m) != string::npos) {
-            if(playingTime < musics[i].time) {
-                playingTime = musics[i].time;
-                answer = musics[i].title;
-            }
-        }
+    convert(sheet);
 
+    string radio;
+    int idx = 0;
+    for (int j = 0; j < playTime; j++) {
+      radio += sheet[idx++];
+      if (idx == sheet.length())
+        idx = 0;
     }
-    return answer == "" ? "(None)" : answer;
+
+    convert(m);
+    if (radio.find(m) != string::npos) {
+      if (answerPlayTime < playTime) {
+        answerPlayTime = playTime;
+        answer = title;
+      }
+    }
+  }
+  return answer;
 }
