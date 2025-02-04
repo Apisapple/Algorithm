@@ -13,13 +13,13 @@ int solution(vector<int> a) {
   vector<int> right(a.size(), 0);
 
   int minValue = a[0];
-  for (int i = 0; i < a.size(); i++) {
+  for (size_t i = 0; i < a.size(); i++) {
     minValue = min(minValue, a[i]);
     left[i] = minValue;
   }
 
   minValue = a[a.size() - 1];
-  for (int i = a.size() - 1; i >= 0; i--) {
+  for (size_t i = a.size(); i-- > 0;) {
     minValue = min(minValue, a[i]);
     right[i] = minValue;
   }
